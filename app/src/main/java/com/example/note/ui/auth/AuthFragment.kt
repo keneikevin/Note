@@ -70,8 +70,8 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-                AuthFragmentDirections.actionAuthFragmentToNotesFragment(),
-                navOptions
+            AuthFragmentDirections.actionAuthFragmentToNotesFragment(),
+            navOptions
         )
     }
 
@@ -103,12 +103,12 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
         viewModel.registerStatus.observe(viewLifecycleOwner, Observer { result ->
             when(result.status){
                 Status.SUCCESS -> {
-                    loginProgressBar.visibility = View.GONE
+                    registerProgressBar.visibility = View.GONE
                     showSnackbar(result.data ?:"Successfully registered an account")
                 }
                 Status.ERROR ->{
                     registerProgressBar.visibility = View.GONE
-                    showSnackbar(result.message?:"An unknown error occured")
+                    showSnackbar(result.message?:"An unknown error occurred")
                 }
                 Status.LOADING ->{
                     registerProgressBar.visibility = View.VISIBLE

@@ -6,7 +6,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
+apply plugin: 'androidx.navigation.safeargs'
 
 android {
     compileSdkVersion 30
@@ -112,7 +112,8 @@ dependencies {
 
     // Markwon
     implementation "io.noties.markwon:core:4.4.0"
-
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
     // Color Picker Dialog
     implementation "com.github.skydoves:colorpickerview:2.1.7"
 }

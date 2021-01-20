@@ -16,6 +16,7 @@
         android:textColorHint="@android:color/tertiary_text_light"
         android:inputType="textEmailAddress"
         android:padding="16dp"
+        style="p"
         android:textColor="@android:color/white" />
 
 </com.google.android.material.textfield.TextInputLayout>
