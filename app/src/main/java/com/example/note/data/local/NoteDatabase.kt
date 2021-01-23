@@ -13,4 +13,5 @@ import com.example.note.data.local.entities.Note
 @TypeConverters(Converters::class)
 abstract class NoteDatabase: RoomDatabase(){
     abstract fun noteDao(): NoteDao
+
 }

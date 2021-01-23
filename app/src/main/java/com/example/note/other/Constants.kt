@@ -11,6 +11,9 @@ object Constants {
     const val DEFAULT_NOTE_COLOR ="FFA500"
 
     const val ENCRYPTED_SHARED_PREF_NAME = "enc_shared_pref"
-    const val BASE_URL = "http://10.0.2.2:8001"
+    const val BASE_URL = "https://10.0.2.2:8002"
     val IGNORE_AUTH_URLS = listOf("/login","/register")
+    const val ADD_OWNER_DIALOGUE_TAG = "ADD_OWNER_DIALOGUE_TAG"
+
+    const val FRAGMENT_TAG = "AddEditNoteFragment"
 }

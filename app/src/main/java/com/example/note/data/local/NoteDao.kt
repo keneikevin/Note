@@ -4,16 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.note.data.local.entities.LocallyDeletedNoteId
 import com.example.note.data.local.entities.Note
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
 
 
     @Query("SELECT * FROM notes")
-    fun getAllNotes():List<Note>
-
-
-
+    fun getAllNotes(): Flow<List<Note>>
 
 
 

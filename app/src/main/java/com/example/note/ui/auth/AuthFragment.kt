@@ -9,12 +9,14 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.note.R
 import com.example.note.data.remote.BasicAuthInterceptor
+import com.example.note.databinding.FragmentAuthBinding
 import com.example.note.other.Constants.KEY_LOGGED_IN_EMAIL
 import com.example.note.other.Constants.KEY_PASSWORD
 import com.example.note.other.Constants.NO_EMAIL
 import com.example.note.other.Constants.NO_PASSWORD
 import com.example.note.other.Status
 import com.example.note.ui.BaseFragment
+import com.example.note.ui.auth.AuthFragmentDirections.actionAuthFragmentToNotesFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_auth.*
 import timber.log.Timber
@@ -23,7 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AuthFragment :BaseFragment(R.layout.fragment_auth){
     private val viewModel: AuthViewModel by viewModels()
-
+    private lateinit var binding: FragmentAuthBinding
     @Inject
     lateinit var sharedPref: SharedPreferences
 
@@ -33,23 +35,24 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
     private var curEmail: String? = null
     private var curPassword:String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentAuthBinding.bind(view)
         if(isLoggedIn()){
             authenticateApi(curEmail?:"", curPassword?:"")
             redirectLogin()
         }
         subscribeToObservers()
         btnRegister.setOnClickListener {
-            val email = etRegisterEmail.text.toString()
-            val password = etRegisterPassword.text.toString()
-            val confirmPassword =etRegisterPasswordConfirm.text.toString()
+            val email = binding.etRegisterEmail.text.toString()
+            val password = binding.etRegisterPassword.text.toString()
+            val confirmPassword =binding.etRegisterPasswordConfirm.text.toString()
             viewModel.register(email, password, confirmPassword)
         }
         btnLogin.setOnClickListener {
-            val email = etLoginEmail.text.toString()
-            val password = etLoginPassword.text.toString()
+            val email = binding.etLoginEmail.text.toString()
+            val password = binding.etLoginPassword.text.toString()
             viewModel.login(email, password)
         }
     }
@@ -82,7 +85,7 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
         result.let {
             when(result.status){
                 Status.SUCCESS -> {
-                    loginProgressBar.visibility = View.GONE
+                    binding.loginProgressBar.visibility = View.GONE
                     showSnackbar(result.data ?:"Successfully logged in")
                     sharedPref.edit().putString(KEY_LOGGED_IN_EMAIL, curEmail).apply()
                     sharedPref.edit().putString(KEY_PASSWORD, curPassword).apply()
@@ -91,11 +94,11 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
                     redirectLogin()
                 }
                 Status.ERROR ->{
-                    loginProgressBar.visibility = View.GONE
+                    binding.loginProgressBar.visibility = View.GONE
                     showSnackbar(result.message ?:"A unknown error occurred")
                 }
                 Status.LOADING ->{
-                    loginProgressBar.visibility = View.VISIBLE
+                    binding.loginProgressBar.visibility = View.VISIBLE
                 }
             }
         }
@@ -103,15 +106,15 @@ class AuthFragment :BaseFragment(R.layout.fragment_auth){
         viewModel.registerStatus.observe(viewLifecycleOwner, Observer { result ->
             when(result.status){
                 Status.SUCCESS -> {
-                    registerProgressBar.visibility = View.GONE
+                    binding.registerProgressBar.visibility = View.GONE
                     showSnackbar(result.data ?:"Successfully registered an account")
                 }
                 Status.ERROR ->{
-                    registerProgressBar.visibility = View.GONE
+                    binding.registerProgressBar.visibility = View.GONE
                     showSnackbar(result.message?:"An unknown error occurred")
                 }
                 Status.LOADING ->{
-                    registerProgressBar.visibility = View.VISIBLE
+                    binding.registerProgressBar.visibility = View.VISIBLE
                 }
             }
         })

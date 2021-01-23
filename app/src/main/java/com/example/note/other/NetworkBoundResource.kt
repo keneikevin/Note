@@ -1,7 +1,6 @@
 package com.example.note.other
 
 import kotlinx.coroutines.flow.*
-import retrofit2.http.Query
 
 inline fun <ResultType, RequestType> networkBoundResource(
     crossinline query: () -> Flow<ResultType>,
