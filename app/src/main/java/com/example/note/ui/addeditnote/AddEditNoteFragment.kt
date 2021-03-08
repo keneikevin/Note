@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.example.note.R
 import com.example.note.data.local.entities.Note
-import com.example.note.databinding.FragmentAddEditNoteBinding
 import com.example.note.other.Constants.DEFAULT_NOTE_COLOR
 import com.example.note.other.Constants.FRAGMENT_TAG
 import com.example.note.other.Constants.KEY_LOGGED_IN_EMAIL
@@ -27,40 +26,45 @@ import kotlinx.android.synthetic.main.item_note.viewNoteColor
 import java.util.*
 import javax.inject.Inject
 
+const val FRAGMENT_TAG = "AddEditNoteFragment"
 
 @AndroidEntryPoint
-class AddEditNoteFragment:BaseFragment(R.layout.fragment_add_edit_note) {
-    private val viewModel :AddEditNoteViewModel by viewModels()
+class AddEditNoteFragment : BaseFragment(R.layout.fragment_add_edit_note) {
+
+    private val viewModel: AddEditNoteViewModel by viewModels()
+
     private val args: AddEditNoteFragmentArgs by navArgs()
-    private lateinit var binding: FragmentAddEditNoteBinding
+
     private var curNote: Note? = null
     private var curNoteColor = DEFAULT_NOTE_COLOR
+
     @Inject
     lateinit var sharedPref: SharedPreferences
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentAddEditNoteBinding.bind(view)
-        if (args.id.isNotEmpty()){
+        if(args.id.isNotEmpty()) {
             viewModel.getNoteById(args.id)
             subscribeToObservers()
         }
-        if (savedInstanceState != null){
+
+        if(savedInstanceState != null) {
             val colorPickerDialog = parentFragmentManager.findFragmentByTag(FRAGMENT_TAG)
-            as ColorPickerDialogFragment?
+                    as ColorPickerDialogFragment?
             colorPickerDialog?.setPositiveListener {
                 changeViewNoteColor(it)
             }
         }
-            binding.viewNoteColor.setOnClickListener{
-                ColorPickerDialogFragment().apply {
-                    setPositiveListener {
-                        changeViewNoteColor(it)
-                    }
-                }.show(parentFragmentManager, FRAGMENT_TAG)
-            }
 
-
+        viewNoteColor.setOnClickListener {
+            ColorPickerDialogFragment().apply {
+                setPositiveListener {
+                    changeViewNoteColor(it)
+                }
+            }.show(parentFragmentManager, FRAGMENT_TAG)
+        }
     }
+
     private fun changeViewNoteColor(colorString: String) {
         val drawable = ResourcesCompat.getDrawable(resources, R.drawable.circle_shape, null)
         drawable?.let {
@@ -71,21 +75,23 @@ class AddEditNoteFragment:BaseFragment(R.layout.fragment_add_edit_note) {
             curNoteColor = colorString
         }
     }
-    private fun subscribeToObservers(){
+
+    private fun subscribeToObservers() {
         viewModel.note.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { result ->
-                when(result.status){
+                when(result.status) {
                     Status.SUCCESS -> {
                         val note = result.data!!
-                        binding.etNoteTitle.setText(note.title)
-                            binding.etNoteContent.setText(note.content)
-                              changeViewNoteColor(note.color)
-                    }
-                    Status.LOADING -> {
-                        /*NO_OP*/
+                        curNote = note
+                        etNoteTitle.setText(note.title)
+                        etNoteContent.setText(note.content)
+                        changeViewNoteColor(note.color)
                     }
                     Status.ERROR -> {
-                        showSnackbar(result.message ?:"Note not found")
+                        showSnackbar(result.message ?: "Note not found")
+                    }
+                    Status.LOADING -> {
+                        /* NO-OP */
                     }
                 }
             }
@@ -96,28 +102,24 @@ class AddEditNoteFragment:BaseFragment(R.layout.fragment_add_edit_note) {
         super.onPause()
         saveNote()
     }
-    private fun saveNote(){
-            val authEmail = sharedPref.getString(KEY_LOGGED_IN_EMAIL, NO_EMAIL) ?: NO_EMAIL
-            val title = binding.etNoteTitle.text.toString()
-            val content = binding.etNoteContent.text.toString()
-            if (title.isEmpty() || content.isEmpty()){
-                return
-            }
-            val date = System.currentTimeMillis()
-            val color = curNoteColor
-            val id = curNote?.id?:UUID.randomUUID().toString()
-            val owners = curNote?.owners ?: listOf(authEmail)
-            val note = Note(title,content,date,owners,color, id = id)
+
+    private fun saveNote() {
+        val authEmail = sharedPref.getString(KEY_LOGGED_IN_EMAIL, NO_EMAIL) ?: NO_EMAIL
+
+        val title = etNoteTitle.text.toString()
+        val content = etNoteContent.text.toString()
+        if(title.isEmpty() || content.isEmpty()) {
+            return
+        }
+        val date = System.currentTimeMillis()
+        val color = curNoteColor
+        val id = curNote?.id ?: UUID.randomUUID().toString()
+        val owners = curNote?.owners ?: listOf(authEmail)
+        val note = Note(title, content, date, owners, color, id = id)
         viewModel.insertNote(note)
     }
+
 }
-
-
-
-
-
-
-
 
 
 

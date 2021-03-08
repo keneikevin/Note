@@ -1,17 +1,21 @@
 package com.example.note.adapters
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.note.R
 import com.example.note.data.local.entities.Note
-import com.example.note.databinding.ItemNoteBinding
+import kotlinx.android.synthetic.main.item_note.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
-    inner class NoteViewHolder(val binding: ItemNoteBinding): RecyclerView.ViewHolder(binding.root)
+    inner class NoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Note>() {
         override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
@@ -33,22 +37,23 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         return NoteViewHolder(
-            ItemNoteBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                )
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_note,
+                parent,
+                false
+            )
         )
     }
 
     override fun getItemCount(): Int {
         return notes.size
     }
+
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = notes[position]
-        holder.binding.apply {
+        holder.itemView.apply {
             tvTitle.text = note.title
-            if (!note.isSynced) {
+            if(!note.isSynced) {
                 ivSynced.setImageResource(R.drawable.ic_cross)
                 tvSynced.text = "Not Synced"
             } else {
@@ -60,29 +65,26 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
             val dateString = dateFormat.format(note.date)
             tvDate.text = dateString
 
-            //Todo drawable resources
-
-          /*  val drawable = ResourcesCompat.getDrawable(res, R.drawable.circle_shape, null)
+            val drawable = ResourcesCompat.getDrawable(resources, R.drawable.circle_shape, null)
             drawable?.let {
                 val wrappedDrawable = DrawableCompat.wrap(it)
-
                 val color = Color.parseColor("#${note.color}")
                 DrawableCompat.setTint(wrappedDrawable, color)
-                viewNoteColor.background = it
-            }}*/
-            onItemClickListener?.let { click ->
-                click(note)
+                viewNoteColor.background = wrappedDrawable
+            }
 
+            setOnClickListener {
+                onItemClickListener?.let { click ->
+                    click(note)
+                }
             }
         }
     }
-    fun setOnItemClickListener(onItemClick: (Note)-> Unit) {
+
+    fun setOnItemClickListener(onItemClick: (Note) -> Unit) {
         this.onItemClickListener = onItemClick
-
-    }}
-
-
-
+    }
+}
 
 
 

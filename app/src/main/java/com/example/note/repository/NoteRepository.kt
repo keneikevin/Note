@@ -1,5 +1,6 @@
 package com.example.note.repository
 
+import android.app.Application
 import android.content.Context
 import com.example.note.data.local.NoteDao
 import com.example.note.data.local.entities.LocallyDeletedNoteId
@@ -14,12 +15,11 @@ import com.example.note.other.networkBoundResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.util.concurrent.Flow
 import javax.inject.Inject
 import kotlin.Exception
 
 class NoteRepository @Inject constructor(
-    private val context: Context,
+    private val context: Application,
     private val noteDao: NoteDao,
     private val noteApi: NoteApi,
 ) {

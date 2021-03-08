@@ -15,13 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.note.R
 import com.example.note.adapters.NoteAdapter
-import com.example.note.databinding.FragmentNotesBinding
 import com.example.note.other.Constants.KEY_LOGGED_IN_EMAIL
 import com.example.note.other.Constants.KEY_PASSWORD
 import com.example.note.other.Constants.NO_EMAIL
 import com.example.note.other.Constants.NO_PASSWORD
 import com.example.note.other.Status
 import com.example.note.ui.BaseFragment
+import com.example.note.ui.notedetail.NotesDetailFragmentDirections
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_notes.*
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class NotesFragment : BaseFragment(R.layout.fragment_notes) {
 
     private val viewModel: NotesViewModel by viewModels()
-    private lateinit var binding: FragmentNotesBinding
+
     @Inject
     lateinit var sharedPref: SharedPreferences
 
@@ -39,9 +39,9 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
     private val swipingItem = MutableLiveData(false)
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -49,7 +49,6 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentNotesBinding.bind(view)
         requireActivity().requestedOrientation = SCREEN_ORIENTATION_USER
         setupRecyclerView()
         setupSwipeRefreshLayout()
@@ -57,10 +56,10 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
 
         noteAdapter.setOnItemClickListener {
             findNavController().navigate(
-                    NotesFragmentDirections.actionNotesFragmentToNotesDetailFragment(it.id)
+                NotesDetailFragmentDirections.actionNotesDetailFragmentToAddEditNoteFragment(it.id)
             )
         }
-        binding.fabAddNote.setOnClickListener {
+        fabAddNote.setOnClickListener {
             findNavController().navigate(NotesFragmentDirections.actionNotesFragmentToAddEditNoteFragment(""))
         }
     }
@@ -100,16 +99,16 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
     }
 
     private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
     ) {
         override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
         ) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
@@ -118,9 +117,9 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
         }
 
         override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
         ): Boolean {
             return true
         }
@@ -145,7 +144,7 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
         }
     }
 
-    private fun setupRecyclerView() = binding.rvNotes.apply {
+    private fun setupRecyclerView() = rvNotes.apply {
         noteAdapter = NoteAdapter()
         adapter = noteAdapter
         layoutManager = LinearLayoutManager(requireContext())
@@ -156,11 +155,11 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
         sharedPref.edit().putString(KEY_LOGGED_IN_EMAIL, NO_EMAIL).apply()
         sharedPref.edit().putString(KEY_PASSWORD, NO_PASSWORD).apply()
         val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.notesFragment, true)
-                .build()
+            .setPopUpTo(R.id.notesFragment, true)
+            .build()
         findNavController().navigate(
-                NotesFragmentDirections.actionNotesFragmentToAuthFragment(),
-                navOptions
+            NotesFragmentDirections.actionNotesFragmentToAuthFragment(),
+            navOptions
         )
     }
 
@@ -176,7 +175,6 @@ class NotesFragment : BaseFragment(R.layout.fragment_notes) {
         inflater.inflate(R.menu.menu_notes, menu)
     }
 }
-
 
 
 
